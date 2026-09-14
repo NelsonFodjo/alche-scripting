@@ -14,14 +14,11 @@ def top_ten(subreddit):
         print("None")
         return
 
-    url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
     headers = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
     }
-    params = {
-        "limit": 10,
-        "raw_json": 1
-    }
+    params = {"limit": 10}
 
     try:
         response = requests.get(
@@ -31,17 +28,22 @@ def top_ten(subreddit):
             allow_redirects=False
         )
 
-        if response.status_code == 200:
-            res_json = response.json()
-            posts = res_json.get("data", {}).get("children", [])
-
-            if not posts or not isinstance(posts, list):
-                print("None")
-                return
-
-            for post in posts[:10]:
-                print(post.get("data", {}).get("title"))
-        else:
+        if response.status_code != 200:
             print("None")
+            return
+
+        data = response.json().get("data")
+        if data is None:
+            print("None")
+            return
+
+        children = data.get("children")
+        if not children:
+            print("None")
+            return
+
+        for post in children:
+            print(post.get("data", {}).get("title"))
+
     except Exception:
         print("None")
