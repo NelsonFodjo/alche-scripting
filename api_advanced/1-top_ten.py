@@ -14,11 +14,14 @@ def top_ten(subreddit):
         print("None")
         return
 
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
     headers = {
-        "User-Agent": "0x16-api_advanced:v1.0.0 (by /u/NelsonFodjo)"
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
-    params = {"limit": 10}
+    params = {
+        "limit": 10,
+        "raw_json": 1
+    }
 
     try:
         response = requests.get(
@@ -29,8 +32,10 @@ def top_ten(subreddit):
         )
 
         if response.status_code == 200:
-            posts = response.json().get("data", {}).get("children", [])
-            if not posts:
+            res_json = response.json()
+            posts = res_json.get("data", {}).get("children", [])
+
+            if not posts or not isinstance(posts, list):
                 print("None")
                 return
 
